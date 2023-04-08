@@ -1,0 +1,279 @@
+{% extends 'admin/Dashboard.html' %} {% block content %}
+<div class="container">
+  <div class="container">
+    <div class="card shadow mb-4">
+      <div class="card-body">
+  <div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800">Supplier</h1>
+      <button
+                type="button"
+                class="btn btn-success pull-right "
+                data-toggle="modal"
+                data-target="#mymodal"
+              >
+              <i class="fas fa-plus"></i>
+                </button>
+    </div>
+  </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+
+
+            {%with messages = get_flashed_messages()%}
+            {%if messages%}
+            {%for message in messages%}
+
+            <div class="alert alert-success alert-dismissable" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">x</span>
+              </button>
+              {{message}}
+
+            </div>
+
+            {%endfor%}
+            {%endif%}
+            {%endwith%}
+
+            <table class="table table-striped">
+             
+              <tr>
+                <th>#</th>
+                <th>NAMA SUP</th>
+                <th>ALAMAT</th>
+                <th>NO TLP</th>
+                <th>EMAIL</th>
+                <th>ACTION</th>
+              </tr>
+
+              {% for row in suplier.items %}
+              <tr>
+                <td>{{loop.index}}</td>
+                <td>{{row.nama_supplier}}</td>
+                <td>{{row.alamat}}</td>
+                <td>{{row.no_telp}}</td>
+                <td>{{row.email}}</td>
+                <td>
+                  <a
+                    href="/update/{{row.id_supplier}}"
+                    class="btn btn-warning btn-xs"
+                    data-toggle="modal"
+                    data-target="#modaledit{{row.id_supplier}}"
+                  > <i class="fas fa-edit"></i>
+                    
+                  </a>
+                  <a
+                    href="/deletevsup/{{row.id_supplier}}"
+                    class="btn btn-danger btn-xs"
+                    onclick="return confirm('Serius Mau delete Item?')"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </a>
+                </td>
+              </tr>
+           <!-- modal edit -->
+           <div id="modaledit{{row.id_supplier}}" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">   
+              <h4 class="modal-title">Insert Data</h4>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{{url_for('updatevsup')}}" method="POST">
+                <div class="form-group">
+
+                <div class="form-group">
+                  <label for="">Nama SUPPLIER</label>
+                  <input type="hidden" name="id_supplier" value="{{row.id_supplier}}">
+                  <input
+                    type="text"
+                    name="nama_supplier"
+                    id=""
+                    class="form-control"
+                    value="{{row.nama_supplier}}"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">Alamat</label>
+                  <input
+                    type="text"
+                    name="alamat"
+                    id=""
+                    class="form-control"
+                    value="{{row.alamat}}"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">No telp</label>
+                  <input
+                    type="number"
+                    name="no_telp"
+                    id=""
+                    value="{{row.no_telp}}"
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value="{{row.email}}"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+
+
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Update</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                close
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- end modal add -->
+      </div> 
+              {%endfor%}
+
+            </table>
+            <nav aria-label="...">
+              <ul class="pagination">
+                <li class="page-item {% if not suplier.has_prev %} disabled {% endif %}">
+                  <a class="page-link" href="?page={{ suplier.prev_num}}" tabindex="-1">Previous</a>
+                </li>
+                {% for page in suplier.iter_pages() %}
+                <li class="page-item {% if page == suplier.page %} active {% endif %}">
+                  <a class="page-link" href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a>
+                </li>
+                {% endfor %}
+                
+                <li class="page-item {% if not suplier.has_next %} disabled {% endif %}">
+                  <a class="page-link " href="?page={{ suplier.next_num}}">Next</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- end modal add -->
+</div>
+
+      <!-- modal add -->
+      <div id="mymodal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">   
+              <h4 class="modal-title">Insert Data</h4>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{{url_for('insertvsup')}}" method="POST">
+                <div class="form-group">
+                  <label for="">ID SUPPLIER</label>
+                  <input
+                    type="text"
+                    name="id_supplier"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">Nama SUPPLIER</label>
+                  <input
+                    type="text"
+                    name="nama_supplier"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">Alamat</label>
+                  <input
+                    type="text"
+                    name="alamat"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">No telp</label>
+                  <input
+                    type="number"
+                    name="no_telp"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+
+
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Add</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                close
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- end modal add -->
+      </div> 
+
+ 
+
+      <!-- end container -->
+      {% endblock content %}

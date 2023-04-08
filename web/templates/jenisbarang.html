@@ -1,0 +1,429 @@
+{% if session['level'] == 'Admin' :%}
+{% extends 'admin/Dashboard.html' %} {% block content %}
+<div class="container">
+  <div class="container">
+    <div class="card shadow mb-4">
+      <div class="card-body">
+  <div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800">JENIS BARANG</h1>
+      <button
+                  type="button"
+                  class="btn btn-success pull-right "
+                  data-toggle="modal"
+                  data-target="#mymodal"
+                >
+                 <i class="fas fa-plus"></i> TAMBAH
+                </button>
+    </div>
+  </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            
+
+            {%with messages = get_flashed_messages()%}
+            {%if messages%}
+            {%for message in messages%}
+
+            <div class="alert alert-success alert-dismissable" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">x</span>
+              </button>
+              {{message}}
+
+            </div>
+
+            {%endfor%}
+            {%endif%}
+            {%endwith%}
+
+
+              <table class="table table-bordered"  width="100%" cellspacing="0">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>JENIS BARANG</th>
+                <th>BAHAN</th>
+                <th>ACTION</th>
+              </tr>
+              </thead>
+              {% for row in jenisbarang.items %}
+              <tbody>
+              <tr>
+                <td>{{loop.index}}</td>
+                <td>{{row.jenis_barang}}</td>
+                <td>{{row.bahan}}</td>
+                <td>
+                  <a
+                    href="/update/{{row.id_jenis}}"
+                    class="btn btn-warning btn-xs"
+                    data-toggle="modal"
+                    data-target="#modaledit{{row.id_jenis}}"
+                  > <i class="fas fa-edit"></i>
+                    
+                  </a>
+                  <a
+                    href="/deletevjbarang/{{row.id_jenis}}"
+                    class="btn btn-danger btn-xs"
+                    onclick="return confirm('Serius Mau delete Item?')"
+                  > <i class="fas fa-trash"></i>
+                    
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+           <!-- modal edit -->
+           <div id="modaledit{{row.id_jenis}}" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">   
+              <h4 class="modal-title">UPDATE DATA</h4>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{{url_for('updatevjbarang')}}" method="POST">
+                <div class="form-group">
+
+                <div class="form-group">
+                  <label for="">JENIS BARANG</label>
+                  <input type="hidden" name="id_jenis" value="{{row.id_jenis}}">
+                  <input
+                    type="text"
+                    name="jenis_barang"
+                    id=""
+                    class="form-control"
+                    value="{{row.jenis_barang}}"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">BAHAN</label>
+                  <input
+                    type="text"
+                    name="bahan"
+                    id=""
+                    class="form-control"
+                    value="{{row.bahan}}"
+                    required
+                  />
+                </div>
+
+
+
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">UPDATE</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                CLOSE
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- end modal add -->
+      </div> 
+              {%endfor%}
+
+            </table>
+            <nav aria-label="...">
+              <ul class="pagination">
+                <li class="page-item {% if not jenisbarang.has_prev %} disabled {% endif %}">
+                  <a class="page-link" href="?page={{ jenisbarang.prev_num}}" tabindex="-1">Previous</a>
+                </li>
+                {% for page in jenisbarang.iter_pages() %}
+                <li class="page-item {% if page == jenisbarang.page %} active {% endif %}">
+                  <a class="page-link" href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a>
+                </li>
+                {% endfor %}
+                
+                <li class="page-item {% if not jenisbarang.has_next %} disabled {% endif %}">
+                  <a class="page-link " href="?page={{ jenisbarang.next_num}}">Next</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+          </div>
+          </div>
+
+      <!-- modal add -->
+      <div id="mymodal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">   
+              <h4 class="modal-title">TAMBAH DATA</h4>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{{url_for('insertvjbarang')}}" method="POST">
+                <div class="form-group">
+                  <label for="">JENIS BARANG</label>
+                  <input
+                    type="text"
+                    name="jenis_barang"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">BAHAN</label>
+                  <input
+                    type="text"
+                    name="bahan"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">TAMBAH</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                CLOSE
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- end modal add -->
+      </div> 
+
+ 
+
+      {% endblock content %}
+      {% elif session['level'] == 'Petugas' :%}
+{% extends 'admin/Dashboard_2.html' %} {% block content2 %}
+<br>
+      <div class="col-lg-12 grid-margin stretch-card">
+        
+        <div class="card">
+          
+          <div class="card-body">
+            <div class="row pt-3">
+              <div class="col-sm-6 pl-3">
+                <div class="d-lg-flex align-items-center">
+                  <div>
+                    <h3 class="text-dark font-weight-bold mb-2">Jenis Barang</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center justify-content-md-end">
+                  <div class="pe-1 mb-3 mb-xl-0">
+                      <button type="button" class="btn btn-outline-inverse-info btn-icon-text" data-toggle="modal" 
+                      data-target="#mymodal">
+                        
+                        <i class="mdi mdi-plus-box"></i>                          
+                      </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {%with messages = get_flashed_messages()%}
+            {%if messages%}
+            {%for message in messages%}
+
+            <div class="alert alert-success alert-dismissable" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">x</span>
+              </button>
+              {{message}}
+
+            </div>
+
+            {%endfor%}
+            {%endif%}
+            {%endwith%}
+            <br>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>JENIS BARANG</th>
+                    <th>BAHAN</th>
+                    <th>ACTION</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in jenisbarang %}
+                  <tr>
+                    <td></td>
+                    <td>{{row.jenis_barang}}</td>
+                    <td>{{row.bahan}}</td>
+                    <td>
+                      <a
+                        href="/update/{{row.id_jenis}}"
+                        class="btn btn-outline-warning btn-fw"
+                        data-toggle="modal"
+                        data-target="#modaledit{{row.id_jenis}}"
+                      >
+                        <i class="mdi mdi-table-edit"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+               <!-- modal edit -->
+                          <!-- modal edit -->
+           <div id="modaledit{{row.id_jenis}}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">   
+                  <h4 class="modal-title">UPDATE DATA</h4>
+                  <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="{{url_for('updatevjbarang')}}" method="POST">
+                    <div class="form-group">
+    
+                    <div class="form-group">
+                      <label for="">JENIS BARANG</label>
+                      <input type="hidden" name="id_jenis" value="{{row.id_jenis}}">
+                      <input
+                        type="text"
+                        name="jenis_barang"
+                        id=""
+                        class="form-control"
+                        value="{{row.jenis_barang}}"
+                      />
+                    </div>
+    
+                    <div class="form-group">
+                      <label for="">BAHAN</label>
+                      <input
+                        type="text"
+                        name="bahan"
+                        id=""
+                        class="form-control"
+                        value="{{row.bahan}}"
+                        required
+                      />
+                    </div>
+    
+    
+    
+                    <div class="form-group">
+                      <button class="btn btn-primary" type="submit">UPDATE</button>
+                    </div>
+                  </form>
+                </div>
+    
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-default"
+                    data-dismiss="modal"
+                  >
+                    CLOSE
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- end modal add -->
+          </div> 
+                  {%endfor%}
+              </table>
+              <nav aria-label="...">
+                <ul class="pagination">
+                  <li class="page-item {% if not jenisbarang.has_prev %} disabled {% endif %}">
+                    <a class="page-link" href="?page={{ jenisbarang.prev_num}}" tabindex="-1">Previous</a>
+                  </li>
+                  {% for page in jenisbarang.iter_pages() %}
+                  <li class="page-item {% if page == jenisbarang.page %} active {% endif %}">
+                    <a class="page-link" href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a>
+                  </li>
+                  {% endfor %}
+                  
+                  <li class="page-item {% if not jenisbarang.has_next %} disabled {% endif %}">
+                    <a class="page-link " href="?page={{ jenisbarang.next_num}}">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+           <!-- modal add -->
+           <div id="mymodal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">   
+                  <h4 class="modal-title">TAMBAH DATA</h4>
+                  <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="{{url_for('insertvjbarang')}}" method="POST">
+                    <div class="form-group">
+                      <label for="">JENIS BARANG</label>
+                      <input
+                        type="text"
+                        name="jenis_barang"
+                        id=""
+                        class="form-control"
+                        required
+                      />
+                    </div>
+    
+                    <div class="form-group">
+                      <label for="">BAHAN</label>
+                      <input
+                        type="text"
+                        name="bahan"
+                        id=""
+                        class="form-control"
+                        required
+                      />
+                    </div>
+    
+    
+                    <div class="form-group">
+                      <button class="btn btn-primary" type="submit">TAMBAH</button>
+                    </div>
+                  </form>
+                </div>
+    
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-default"
+                    data-dismiss="modal"
+                  >
+                    CLOSE
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- end modal add -->
+          </div> 
+{% endblock content2%}
+{%endif%}

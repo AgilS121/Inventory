@@ -1,0 +1,616 @@
+{% if session['level'] == 'Admin' : %}
+{% extends 'admin/Dashboard.html' %} {% block content %}
+<div class="container">
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="table-responsive">
+      <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">BARANG</h1>
+        <button
+                    type="button"
+                    class="btn btn-success pull-right "
+                    data-toggle="modal"
+                    data-target="#mymodal"
+                  >
+                  <i class="fas fa-plus"></i> TAMBAH
+                  </button>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+
+            {%with messages = get_flashed_messages()%}
+            {%if messages%}
+            {%for message in messages%}
+
+            <div class="alert alert-success alert-dismissable" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">x</span>
+              </button>
+              {{message}}
+
+            </div>
+
+            {%endfor%}
+            {%endif%}
+            {%endwith%}
+            
+                  <table class="table table-striped" id="myTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>ID BARANG</th>
+                      <th>NAMA BARANG</th>
+                      <th>STOK</th>
+                      <th>KETERANGAN</th>
+                      <th>JENIS BARANG</th>
+                      <th>ACTION</th>
+                    </tr>
+                  </thead>
+                  
+                  <tbody>
+                    {% for row in item.items %}
+                    <tr>
+                      <td>{{loop.index}}</td>
+                      <td>{{row.id_barang}}</td>
+                      <td>{{row.nama_barang}}</td>
+                      <td>{{row.stok}}</td>
+                      <td>{{row.keterangan}}</td>
+                      <td>{{row.jenis_barang.jenis_barang}}</td>
+                      <td>
+                        <a
+                          href="/update/{{row.id_barang}}"
+                          class="btn btn-warning btn-xs"
+                          data-toggle="modal"
+                          data-target="#modaledit{{row.id_barang}}"
+                        > <i class="fas fa-edit"></i>
+                        </a>
+                        <a
+                          href="/deletevitem/{{row.id_barang}}"
+                          class="btn btn-danger btn-xs"
+                          onclick="return confirm('Serius Mau delete Item?')"
+                        > <i class="fas fa-trash"></i>
+                          
+                        </a>
+                        <a
+                          href="/update/{{row.id_barang}}"
+                          class="btn btn-warning btn-xs"
+                          data-toggle="modal"
+                          data-target="#qr{{row.id_barang}}"
+                        > qr
+                        </a>
+                      </td>
+                    </tr>
+                  </tbody>
+                  
+                  <div id="qr{{row.id_barang}}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">   
+                          <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <form action="/converted" method="POST">
+                            <div class="form-group">
+                              <label for="">NAMA BARANG</label>
+                              <input type="hidden" name="id_barang" value="{{row.id_barang}}">
+                              <input
+                                type="text"
+                                name="nama_barang"
+                                id=""
+                                class="form-control"
+                                value="{{row.nama_barang}}"
+                              />
+                            </div> 
+                          </form>   
+                            <form action="/download_qr" method="GET"><button class="btn">
+                              <i class="fa fa-download"></i>
+                              Download
+                            </button></form>       
+                            <div class="form-group">
+                            </div>
+                          
+                        </div>
+                
+                        <div class="modal-footer">
+                          <button
+                            type="button"
+                            class="btn btn-default"
+                            data-dismiss="modal"
+                          >
+                            close
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- end modal add -->
+                  </div> 
+
+                <!-- modal edit -->
+                    <div id="modaledit{{row.id_barang}}" class="modal fade" role="dialog">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                                <div class="modal-header">   
+                                  <h4 class="modal-title">UPDATE DATA BARANG</h4>
+                                  <button type="button" class="close" data-dismiss="modal">
+                                    &times;
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <form action="{{url_for('updatevitem')}}" method="POST">
+                                    <div class="form-group">
+
+                                    <div class="form-group">
+                                      <label for="">NAMA BARANG</label>
+                                      <input type="hidden" name="id_barang" value="{{row.id_barang}}">
+                                      <input
+                                        type="text"
+                                        name="nama_barang"
+                                        id=""
+                                        class="form-control"
+                                        value="{{row.nama_barang}}"
+                                      />
+                                    </div>
+
+                                    <div class="form-group">
+                                      <label for="">STOK</label>
+                                      <input
+                                        type="number"
+                                        name="stok"
+                                        value="{{row.stok}}"
+                                        id=""
+                                        class="form-control"
+                                        required
+                                      />
+                                    </div>
+
+                                    <div class="form-group">
+                                      <label for="">KETERANGAN</label>
+                                      <input
+                                        type="text"
+                                        name="keterangan"
+                                        value="{{row.keterangan}}"
+                                        id=""
+                                        class="form-control"
+                                        required
+                                      />
+                                    </div>
+
+
+                                    <div class="form-group">
+                                      <label for="">JENIS BARANG</label>
+                                      <select name="id_jenis" id="" class="form-control">
+                                        <option value="">=== Pilih ===</option>
+                                        {% for dt in data1 %}
+                                        <option value="{{ dt.id_jenis}}">
+                                          {{ dt.jenis_barang }}
+                                        </option>
+                                        {% endfor %}
+                                      </select>
+                                    </div>
+
+
+
+                                    <div class="form-group">
+                                      <button class="btn btn-primary" type="submit">UPDATE</button>
+                                    </div>
+                                  </form>
+                                </div>
+
+                              <div class="modal-footer">
+                                <button
+                                  type="button"
+                                  class="btn btn-default"
+                                  data-dismiss="modal"
+                                >
+                                  CLOSE
+                                </button>
+                              </div>
+                          </div>
+                    </div>
+                    {%endfor%}
+
+                   </table>  
+                   <nav aria-label="...">
+                    <ul class="pagination">
+                      <li class="page-item {% if not item.has_prev %} disabled {% endif %}">
+                        <a class="page-link" href="?page={{ item.prev_num}}" tabindex="-1">Previous</a>
+                      </li>
+                      {% for page in item.iter_pages() %}
+                      <li class="page-item {% if page == item.page %} active {% endif %}">
+                        <a class="page-link" href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a>
+                      </li>
+                      {% endfor %}
+                      
+                      <li class="page-item {% if not item.has_next %} disabled {% endif %}">
+                        <a class="page-link " href="?page={{ item.next_num}}">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- end modal add -->
+      </div> 
+              
+
+   <!-- modal add -->
+   <div id="mymodal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">   
+          <h4 class="modal-title">Insert Data</h4>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="{{url_for('insertvitem')}}" method="POST">
+            <div class="form-group">
+              <label for="">ID BARANG</label>
+              <input
+                type="text"
+                name="id_barang"
+                id=""
+                class="form-control"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="">NAMA BARANG</label>
+              <input
+                type="text"
+                name="nama_barang"
+                id=""
+                class="form-control"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="">STOK</label>
+              <input
+                type="number"
+                name="stok"
+                id=""
+                class="form-control"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+                <label for="">KETERANGAN</label>
+                <input
+                  type="text"
+                  name="keterangan"
+                  id=""
+                  class="form-control"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="">JENIS BARANG</label>
+                <select name="id_jenis" id="" class="form-control">
+                  <option value="">=== Pilih ===</option>
+                  {% for dt in data1 %}
+                  <option value="{{ dt.id_jenis}}">
+                    {{ dt.jenis_barang }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+
+
+            <div class="form-group">
+              <button class="btn btn-primary" type="submit">TAMBAH</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-default"
+            data-dismiss="modal"
+          >
+            close
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- end modal add -->
+  </div> 
+
+ 
+
+      <!-- end container -->
+      {% endblock content %}
+      {% elif session['level'] == 'Petugas' :%}
+      {% extends 'admin/Dashboard_2.html' %}
+
+      {% block content2 %}
+      <br>
+      <div class="col-lg-12 grid-margin stretch-card">
+        
+        <div class="card">
+          
+          <div class="card-body">
+            <div class="row pt-3">
+              <div class="col-sm-6 pl-3">
+                <div class="d-lg-flex align-items-center">
+                  <div>
+                    <h3 class="text-dark font-weight-bold mb-2">Barang</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center justify-content-md-end">
+                  <div class="pe-1 mb-3 mb-xl-0">
+                      <button type="button" class="btn btn-outline-inverse-info btn-icon-text" data-toggle="modal" 
+                      data-target="#mymodal">
+                        
+                        <i class="mdi mdi-plus-box"></i>                          
+                      </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {%with messages = get_flashed_messages()%}
+            {%if messages%}
+            {%for message in messages%}
+
+            <div class="alert alert-success alert-dismissable" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">x</span>
+              </button>
+              {{message}}
+
+            </div>
+
+            {%endfor%}
+            {%endif%}
+            {%endwith%}
+            <br>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>ID BARANG</th>
+                    <th>NAMA BARANG</th>
+                    <th>STOK</th>
+                    <th>KETERANGAN</th>
+                    <th>JENIS BARANG</th>
+                    <th>ACTION</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in item.items %}
+                  <tr>
+                    <td>{{loop.index}}</td>
+                    <td>{{row.id_barang}}</td>
+                    <td>{{row.nama_barang}}</td>
+                    <td>{{row.stok}}</td>
+                    <td>{{row.keterangan}}</td>
+                    <td>{{row.jenis_barang.jenis_barang}}</td>
+                    <td>
+                      <a
+                        href="/update/{{row.id_barang}}"
+                        class="btn btn-outline-warning btn-fw"
+                        data-toggle="modal"
+                        data-target="#modaledit{{row.id_barang}}"
+                      >
+                        <i class="mdi mdi-table-edit"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+               <!-- modal edit -->
+               <div id="modaledit{{row.id_barang}}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">   
+                      <h4 class="modal-title">UPDATE DATA BARANG</h4>
+                      <button type="button" class="close" data-dismiss="modal">
+                        &times;
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="{{url_for('updatevitem')}}" method="POST">
+                        <div class="form-group">
+    
+                        <div class="form-group">
+                          <label for="">NAMA BARANG</label>
+                          <input type="hidden" name="id_barang" value="{{row.id_barang}}">
+                          <input
+                            type="text"
+                            name="nama_barang"
+                            id=""
+                            class="form-control"
+                            value="{{row.nama_barang}}"
+                          />
+                        </div>
+    
+                        <div class="form-group">
+                          <label for="">STOK</label>
+                          <input
+                            type="number"
+                            name="stok"
+                            value="{{row.stok}}"
+                            id=""
+                            class="form-control"
+                            required
+                          />
+                        </div>
+    
+                        <div class="form-group">
+                          <label for="">KETERANGAN</label>
+                          <input
+                            type="text"
+                            name="keterangan"
+                            value="{{row.keterangan}}"
+                            id=""
+                            class="form-control"
+                            required
+                          />
+                        </div>
+    
+    
+                        <div class="form-group">
+                          <label for="">JENIS BARANG</label>
+                          <select name="id_jenis" id="" class="form-control">
+                            <option value="">=== Pilih ===</option>
+                            {% for dt in data1 %}
+                            <option value="{{ dt.id_jenis}}">
+                              {{ dt.jenis_barang }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                        </div>
+    
+    
+    
+                        <div class="form-group">
+                          <button class="btn btn-primary" type="submit">UPDATE</button>
+                        </div>
+                      </form>
+                    </div>
+    
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-danger"
+                        data-dismiss="modal"
+                      >
+                        CLOSE
+                      </button>
+                    </div>
+                  </div>
+                </div>
+            <!-- end modal add -->
+          </div> 
+                  {%endfor%}
+              </table>
+              <nav aria-label="...">
+                <ul class="pagination">
+                  <li class="page-item {% if not item.has_prev %} disabled {% endif %}">
+                    <a class="page-link" href="?page={{ item.prev_num}}" tabindex="-1">Previous</a>
+                  </li>
+                  {% for page in item.iter_pages() %}
+                  <li class="page-item {% if page == item.page %} active {% endif %}">
+                    <a class="page-link" href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a>
+                  </li>
+                  {% endfor %}
+                  
+                  <li class="page-item {% if not item.has_next %} disabled {% endif %}">
+                    <a class="page-link " href="?page={{ item.next_num}}">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- modal add -->
+      <div id="mymodal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">   
+              <h4 class="modal-title">Insert Data</h4>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{{url_for('insertvitem')}}" method="POST">
+                <div class="form-group">
+                  <label for="">ID BARANG</label>
+                  <input
+                    type="text"
+                    name="id_barang"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">NAMA BARANG</label>
+                  <input
+                    type="text"
+                    name="nama_barang"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="">STOK</label>
+                  <input
+                    type="number"
+                    name="stok"
+                    id=""
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                    <label for="">KETERANGAN</label>
+                    <input
+                      type="text"
+                      name="keterangan"
+                      id=""
+                      class="form-control"
+                      required
+                    />
+                  </div>
+  
+                  <div class="form-group">
+                    <label for="">JENIS BARANG</label>
+                    <select name="id_jenis" id="" class="form-control">
+                      <option value="">=== Pilih ===</option>
+                      {% for dt in data1 %}
+                      <option value="{{ dt.id_jenis}}">
+                        {{ dt.jenis_barang }}
+                      </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+
+
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">TAMBAH</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                close
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- end modal add -->
+      </div> 
+      {% endblock content2%}
+      {% endif %}
+
+
+            

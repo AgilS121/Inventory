@@ -1,0 +1,8 @@
+Dear {{ request.form['email'] }}, we appreciate you for taking your time. Click
+the link below to Change Password http://127.0.0.1:5000/reset/{{token}}
+<br />
+
+Regard app.config['MAIL_SERVER'] = 'mail.main.com' app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'gilsatria121@gmail.com'
+app.config['MAIL_PASSWORD'] = '' app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True

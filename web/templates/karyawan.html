@@ -1,0 +1,383 @@
+{% extends 'admin/Dashboard.html' %} {% block content %}
+<div class="container">
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="table-responsive">
+        <div class="container-fluid">
+          <!-- Page Heading -->
+          <div
+            class="d-sm-flex align-items-center justify-content-between mb-4"
+          >
+            <h1 class="h3 mb-0 text-gray-800">Karyawan</h1>
+            <div>
+                <button
+                  type="button"
+                  class="btn btn-success pull-right"
+                  data-toggle="modal"
+                  data-target="#mymodal"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
+                
+                <button
+                type="button"
+                class="btn btn-info pull-right"
+                data-toggle="modal"
+                data-target="#send"
+              >
+                <i class="fas fa-paper-plane"></i>
+              </button>
+                
+              </div>
+          </div>
+        </div>
+
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+
+              {%with messages = get_flashed_messages()%} {%if messages%} {%for
+              message in messages%}
+
+              <div class="alert alert-success alert-dismissable" role="alert">
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="alert"
+                  aria-label="close"
+                >
+                  <span aria-hidden="true">x</span>
+                </button>
+                {{message}}
+              </div>
+
+              {%endfor%} {%endif%} {%endwith%}
+
+              <table class="table table-bordereds">
+                <tr>
+                  <th>#</th>
+                  <th>NAMA KARYAWAN</th>
+                  <th>JENIS KARYAWAN</th>
+                  <th>ALAMAT</th>
+                  <th>NO TELP</th>
+                  <th>Email</th>
+                  <th>ACTION</th>
+                </tr>
+
+                {% for row in karyawan.items %}
+                <tr>
+                  <td>{{loop.index}}</td>
+                  <td>{{row.nama_karyawan}}</td>
+                  <td>{{row.jenis_karyawan.jeniskaryawan}}</td>
+                  <td>{{row.alamat}}</td>
+                  <td>{{row.no_telp}}</td>
+                  <td> {{row.email}}</td>
+                  <td>
+                    
+                    <a
+                      href="/updatevkary/{{row.id_karyawan}}"
+                      class="btn btn-warning btn-xs"
+                      data-toggle="modal"
+                      data-target="#modaledit{{row.id_karyawan}}"
+                    >
+                    <i class="fas fa-edit"></i>
+                      
+                    </a>
+                    <a
+                      href="/deletevkary/{{row.id_karyawan}}"
+                      class="btn btn-danger btn-xs"
+                      onclick="return confirm('Serius Mau delete Item?')"
+                    > <i class="fas fa-trash"></i>
+                      
+                    </a>
+                  </td>
+                </tr>
+
+                <!-- modal edit -->
+                <div
+                  id="modaledit{{row.id_karyawan}}"
+                  class="modal fade"
+                  role="dialog"
+                >
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title">Edit Data</h4>
+                        <button
+                          type="button"
+                          class="close"
+                          data-dismiss="modal"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="{{url_for('updatevkary')}}" method="POST">
+                          <div class="form-group">
+                            <label for="">Nama Karyawan</label>
+                            <input
+                              type="hidden"
+                              name="id_karyawan"
+                              value="{{row.id_karyawan}}"
+                              class="form-control"
+                            />
+                            <input
+                              type="text"
+                              name="nama_karyawan"
+                              id=""
+                              class="form-control"
+                              value="{{ row.nama_karyawan}}"
+                              required
+                            />
+                          </div>
+
+                          <div class="form-group">
+                            <label for="">JENIS KARYAWAN</label>
+                            <select
+                              name="id_jenis_karyawan"
+                              id=""
+                              class="form-control"
+                            >
+                              <option value="">=== Pilih ===</option>
+                              {% for dt in data1 %}
+                              <option value="{{ dt.id_jenis_karyawan}}">
+                                {{ dt.jeniskaryawan }}
+                              </option>
+                              {% endfor %}
+                            </select>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="">ALAMAT</label>
+                            <input
+                              type="text"
+                              name="alamat"
+                              id=""
+                              class="form-control"
+                              value="{{ row.alamat}}"
+                              required
+                            />
+                          </div>
+
+                          <div class="form-group">
+                            <label for="">NO TELEPON</label>
+                            <input
+                              type="number"
+                              name="no_telp"
+                              id=""
+                              class="form-control"
+                              value="{{ row.no_telp}}"
+                              required
+                            />
+                          </div>
+
+                          <div class="form-group">
+                            <label for="">Email</label>
+                            <input
+                              type="email"
+                              name="email"
+                              id=""
+                              class="form-control"
+                              value="{{ row.email}}"
+                              required
+                            />
+                          </div>
+
+                          <div class="form-group">
+                            <button class="btn btn-primary" type="submit">
+                              Update
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-default"
+                          data-dismiss="modal"
+                        >
+                          close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- end modal add -->
+                </div>
+                {% endfor %}
+              </table>
+              <nav aria-label="...">
+                <ul class="pagination">
+                  <li class="page-item {% if not karyawan.has_prev %} disabled {% endif %}">
+                    <a class="page-link" href="?page={{ karyawan.prev_num}}" tabindex="-1">Previous</a>
+                  </li>
+                  {% for page in karyawan.iter_pages() %}
+                  <li class="page-item {% if page == karyawan.page %} active {% endif %}">
+                    <a class="page-link" href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a>
+                  </li>
+                  {% endfor %}
+                  
+                  <li class="page-item {% if not karyawan.has_next %} disabled {% endif %}">
+                    <a class="page-link " href="?page={{ karyawan.next_num}}">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- end modal add -->
+  </div> 
+
+        <!-- modal add -->
+        <div id="mymodal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Insert Data</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                  &times;
+                </button>
+              </div>
+              <div class="modal-body">
+                <form action="{{url_for('insertvkary')}}" method="POST">
+                  <div class="form-group">
+                    <label for="">ID KARYAWAN</label>
+                    <input
+                      type="text"
+                      name="id_karyawan"
+                      id=""
+                      class="form-control"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="">NAMA KARYAWAN</label>
+                    <input
+                      type="text"
+                      name="nama_karyawan"
+                      id=""
+                      class="form-control"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="">JENIS KARYAWAN</label>
+                    <select name="id_jenis_karyawan" id="" class="form-control">
+                      <option value="">=== Pilih ===</option>
+                      {% for dt in data1 %}
+                      <option value="{{ dt.id_jenis_karyawan}}">
+                        {{ dt.jeniskaryawan }}
+                      </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="">Alamat</label>
+                    <input
+                      type="text"
+                      name="alamat"
+                      id=""
+                      class="form-control"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="">NO telp</label>
+                    <input
+                      type="number"
+                      name="no_telp"
+                      id=""
+                      class="form-control"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      id=""
+                      class="form-control"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <button class="btn btn-primary" type="submit">Add</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  close
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- end modal add -->
+        </div>
+
+        <div id="send" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Kirim Email</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                  &times;
+                </button>
+              </div>
+              <div class="modal-body">
+                <form action="{{ url_for('send_email')}}" method="POST">
+                  
+
+                  <div class="form-group">
+                    <label for="">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      id=""
+                      class="form-control"
+                      required
+                    />
+                  </div>
+                  <button
+              style="background-color: #ff3f20 !important;"
+              type="submit"
+              class="btn btn-primary"
+            >
+              Submit
+            </button>
+                  
+                </form>
+              </div>
+
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  close
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- end modal add -->
+        </div>
+        <!-- end container -->
+        {% endblock content %}
+      </div>
+    </div>
+  </div>
+</div>
